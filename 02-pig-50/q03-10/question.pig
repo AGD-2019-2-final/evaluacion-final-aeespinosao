@@ -8,3 +8,8 @@ fs -rm -f -r output;
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+lines= LOAD './data.tsv' AS (line:CHARARRAY, date:CHARARRAY, number:INT);
+data = FOREACH lines GENERATE number;
+ordered = ORDER data BY number;
+limited = LIMIT ordered 5;
+STORE limited INTO 'output';

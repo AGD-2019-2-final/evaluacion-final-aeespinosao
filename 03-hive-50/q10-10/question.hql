@@ -24,3 +24,12 @@ LOAD DATA LOCAL INPATH 'data.tsv' INTO TABLE t0;
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
 
+DROP TABLE IF EXISTS count_table;
+
+CREATE TABLE count_table AS
+SELECT key, COUNT(1) AS counts FROM t0 LATERAL VIEW explode(c3) keys AS key, value
+GROUP BY key;
+
+INSERT OVERWRITE LOCAL DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM count_table;

@@ -28,3 +28,14 @@ LOAD DATA LOCAL INPATH 'data.tsv' INTO TABLE t0;
 --
 
 
+DROP TABLE IF EXISTS count_table;
+
+CREATE TABLE count_table AS
+SELECT letter, key, COUNT(1) FROM (SELECT letter, c3 FROM t0 LATERAL VIEW explode(c2) letter_array AS letter) t0 
+LATERAL VIEW explode(c3) key_value AS key,value
+GROUP BY letter, key
+ORDER BY letter, key;
+
+INSERT OVERWRITE LOCAL DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM count_table;
